@@ -358,9 +358,9 @@ export default function IssueDetailPage({
     const nextComment = {
       id: `${Date.now()}-${Math.random()}`,
       writer: 
-        currentProfile?.name ||
-        currentProfile?.email ||
-        "사용자",
+        `${currentProfile?.name || "사용자"} / ${
+        currentProfile?.email || ""
+        }`,
       content: comment.trim(),
       photos: commentPhotos,
       createdAt:
@@ -1016,7 +1016,7 @@ function IssueView({
         style={{
           display: "grid",
           gridTemplateColumns:
-            "150px 1fr 150px 1fr",
+            "repeat(auto-fit,minmax(250px,1fr))",
           gap: "12px",
           alignItems: "center",
         }}
