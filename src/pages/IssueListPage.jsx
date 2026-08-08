@@ -5,6 +5,7 @@ import { useState } from "react";
 import DashboardCards from "../components/DashboardCards";
 import IssueRegister from "../components/IssueRegister";
 import IssueTable from "../components/IssueTable";
+import * as XLSX from "xlsx";
 
 import { styles } from "../styles";
 
@@ -62,6 +63,40 @@ export default function IssueListPage({
     }
   };
 
+  const exportToExcel = () => {
+    const rows = issues.map((issue) => ({
+      IssueNo: issue.issueNo,
+      Title: issue.title,
+      Date: issue.date,
+      Vendor: issue.vendor,
+      Equipment: (issue.equipment || []).join(", "),
+      Status: issue.status,
+      RCA: issue.rootCause || "",
+      Action: issue.action || "",
+    }));
+
+    const worksheet =
+      XLSX.utils.json_to_sheet(rows);
+
+    const workbook =
+      XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      "Issues"
+    );
+
+    XLSX.writeFile(
+      workbook,
+      `Issue_List_${new Date()
+        .toISOString()
+        .slice(0, 10)}.xlsx`
+    );
+  };
+
+
+
   const updateStatus = async (
     issueNo,
     changedStatus
@@ -87,9 +122,9 @@ export default function IssueListPage({
         previousIssues.map((issue) =>
           issue.id === targetIssue.id
             ? {
-                ...issue,
-                status: changedStatus,
-              }
+              ...issue,
+              status: changedStatus,
+            }
             : issue
         )
       );
@@ -123,9 +158,9 @@ export default function IssueListPage({
         previousIssues.map((issue) =>
           issue.id === targetIssue.id
             ? {
-                ...issue,
-                spread: changedSpread,
-              }
+              ...issue,
+              spread: changedSpread,
+            }
             : issue
         )
       );
@@ -184,9 +219,9 @@ export default function IssueListPage({
 
           <p>
             💡문의사항 및 기능개선 접수
-          <br/>
+            <br />
             🤓박영진 책임연구원 (PRI조립/접합기술Task)
-          <br/>
+            <br />
             ✉️youngjin428.park@lge.com / 📲010-9660-8024
           </p>
 
@@ -198,55 +233,55 @@ export default function IssueListPage({
         </div>
 
         <div
-  style={{
-    display: "flex",
-    gap: "10px",
-    alignItems: "center",
-  }}
->
-  <div
-    style={{
-      textAlign: "right",
-      marginRight: "5px",
-    }}
-  >
-    <b>
-      {currentProfile?.name}
-    </b>
+          style={{
+            display: "flex",
+            gap: "10px",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              textAlign: "right",
+              marginRight: "5px",
+            }}
+          >
+            <b>
+              {currentProfile?.name}
+            </b>
 
-    <div
-      style={{
-        color: "#666",
-        fontSize: "12px",
-      }}
-    >
-      {currentProfile?.company}
-      {" / "}
-      {currentProfile?.role}
-    </div>
-  </div>
+            <div
+              style={{
+                color: "#666",
+                fontSize: "12px",
+              }}
+            >
+              {currentProfile?.company}
+              {" / "}
+              {currentProfile?.role}
+            </div>
+          </div>
 
-  {currentProfile?.role ===
-    "admin" && (
-    <button
-      style={{
-        ...styles.primary,
-        backgroundColor:
-          "#2563eb",
-      }}
-      onClick={onOpenAdmin}
-    >
-      회원 승인 관리
-    </button>
-  )}
+          {currentProfile?.role ===
+            "admin" && (
+              <button
+                style={{
+                  ...styles.primary,
+                  backgroundColor:
+                    "#2563eb",
+                }}
+                onClick={onOpenAdmin}
+              >
+                회원 승인 관리
+              </button>
+            )}
 
-  <button
-    style={styles.secondary}
-    onClick={onLogout}
-  >
-    로그아웃
-  </button>
-</div>
+          <button
+            style={styles.secondary}
+            onClick={onLogout}
+          >
+            로그아웃
+          </button>
+        </div>
       </div>
 
       <DashboardCards issues={issues} />
@@ -343,20 +378,42 @@ export default function IssueListPage({
           이슈 목록 ({filteredIssues.length})
         </h2>
 
-        <button
-          style={styles.primary}
-          disabled={isSaving}
-          onClick={() =>
-            setShowForm(
-              (previousValue) =>
-                !previousValue
-            )
-          }
-        >
-          {showForm
-            ? "등록 취소"
-            : "+ 신규 이슈 등록"}
-        </button>
+<div
+  style={{
+    display: "flex",
+    gap: "10px",
+    alignItems: "center",
+  }}
+>
+  <button
+    style={styles.primary}
+    disabled={isSaving}
+    onClick={() =>
+      setShowForm(
+        (previousValue) =>
+          !previousValue
+      )
+    }
+  >
+    {showForm
+      ? "등록 취소"
+      : "+ 신규 이슈 등록"}
+  </button>
+
+  {currentProfile?.role ===
+    "admin" && (
+    <button
+      onClick={exportToExcel}
+      style={styles.secondary}
+    >
+      📊 Excel Export
+    </button>
+  )}
+</div>
+
+
+
+
       </div>
 
       {isSaving && (
