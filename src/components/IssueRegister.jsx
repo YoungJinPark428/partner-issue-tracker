@@ -30,7 +30,7 @@ export default function IssueRegister({
   const change = (field, value) => {
     setForm((previousForm) => ({
       ...previousForm,
-      [field] : value,
+      [field]: value,
     }));
   };
 
@@ -161,7 +161,7 @@ export default function IssueRegister({
               event.target.value
             )
           }
-          placeholder="이슈 목록에 표시될 제목"
+          placeholder="반드시 머릿글 작성할 것 ex) [기구] [제어] [Vision] [디스펜서] [SMS] [기타]"
         />
       </Field>
 
