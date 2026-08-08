@@ -81,7 +81,7 @@ function mergeSpreadDeployment(savedData) {
     group.items.forEach((itemName) => {
       const savedStatus =
         savedData?.[group.key]?.[
-          itemName
+        itemName
         ];
 
       if (
@@ -104,6 +104,8 @@ export default function SpreadDeploymentPanel({
   currentProfile,
   onUpdate,
 }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const [
     spreadDeployment,
     setSpreadDeployment,
@@ -147,12 +149,12 @@ export default function SpreadDeploymentPanel({
         spreadDeployment
       );
 
-    const nextDeployment = 
+    const nextDeployment =
       structuredClone(
         spreadDeployment
       );
 
-    nextDeployment[groupKey][itemName] = 
+    nextDeployment[groupKey][itemName] =
       nextStatus;
 
     try {
@@ -191,7 +193,7 @@ export default function SpreadDeploymentPanel({
           (itemName) => {
             const status =
               spreadDeployment?.[
-                group.key
+              group.key
               ]?.[itemName] ||
               "비대상";
 
@@ -209,6 +211,26 @@ export default function SpreadDeploymentPanel({
         완료: 0,
       }
     );
+
+
+
+  const targetCount =
+    statusCounts["대상"] +
+    statusCounts["완료"];
+
+  const completedCount =
+    statusCounts["완료"];
+
+  const progressRate =
+    targetCount === 0
+      ? 0
+      : Math.round(
+        (completedCount /
+          targetCount) *
+        100
+      );
+
+
 
   return (
     <div
@@ -322,7 +344,81 @@ export default function SpreadDeploymentPanel({
             backgroundColor="#dcfce7"
             color="#166534"
           />
+
+          <div
+            style={{
+              marginTop: "15px",
+              width: "100%",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent:
+                  "space-between",
+                marginBottom: "6px",
+                fontSize: "13px",
+                fontWeight: "bold",
+              }}
+            >
+              <span>진행률</span>
+              <span>
+                {progressRate}%
+              </span>
+            </div>
+
+            <div
+              style={{
+                width: "100%",
+                height: "10px",
+                backgroundColor:
+                  "#e5e7eb",
+                borderRadius: "999px",
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  width: `${progressRate}%`,
+                  height: "100%",
+                  backgroundColor:
+                    "#8CFCB8",
+                }}
+              />
+            </div>
+          </div>
+
+
+
+
         </div>
+
+        <div
+          style={{
+            marginTop: "12px",
+            textAlign: "center",
+          }}
+        >
+          <button
+            onClick={() =>
+              setIsExpanded(
+                !isExpanded
+              )
+            }
+            style={{
+              padding: "6px 12px",
+              border: "1px solid #ddd",
+              borderRadius: "6px",
+              cursor: "pointer",
+              background: "white",
+            }}
+          >
+            {isExpanded
+              ? "▲ 상세 접기"
+              : "▼ 상세 보기"}
+          </button>
+        </div>
+
       </div>
 
       <div
@@ -330,170 +426,177 @@ export default function SpreadDeploymentPanel({
           padding: "18px",
         }}
       >
-        {SPREAD_GROUPS.map(
-          (group) => (
-            <section
-              key={group.key}
-              style={{
-                marginBottom:
-                  group.key === "mp"
-                    ? 0
-                    : "25px",
-              }}
-            >
-              <h4
-                style={{
-                  margin:
-                    "0 0 10px 0",
 
-                  paddingBottom:
-                    "8px",
+        {isExpanded && (
+          <>
 
-                  borderBottom:
-                    "2px solid #e5e7eb",
+            {SPREAD_GROUPS.map(
+              (group) => (
+                <section
+                  key={group.key}
+                  style={{
+                    marginBottom:
+                      group.key === "mp"
+                        ? 0
+                        : "25px",
+                  }}
+                >
+                  <h4
+                    style={{
+                      margin:
+                        "0 0 10px 0",
 
-                  color: "#1f2937",
-                }}
-              >
-                {group.title}
-              </h4>
+                      paddingBottom:
+                        "8px",
 
-              <div
-                style={{
-                  display: "grid",
+                      borderBottom:
+                        "2px solid #e5e7eb",
 
-                  gridTemplateColumns:
-                    "repeat(auto-fill, minmax(190px, 1fr))",
+                      color: "#1f2937",
+                    }}
+                  >
+                    {group.title}
+                  </h4>
 
-                  gap: "10px",
-                }}
-              >
-                {group.items.map(
-                  (itemName) => {
-                    const currentStatus =
-                      spreadDeployment?.[
-                        group.key
-                      ]?.[itemName] ||
-                      "비대상";
+                  <div
+                    style={{
+                      display: "grid",
 
-                    const itemKey =
-                      `${group.key}-${itemName}`;
+                      gridTemplateColumns:
+                        "repeat(auto-fill, minmax(190px, 1fr))",
 
-                    const isSaving =
-                      savingItem ===
-                      itemKey;
+                      gap: "10px",
+                    }}
+                  >
+                    {group.items.map(
+                      (itemName) => {
+                        const currentStatus =
+                          spreadDeployment?.[
+                          group.key
+                          ]?.[itemName] ||
+                          "비대상";
 
-                    return (
-                      <div
-                        key={itemName}
-                        style={{
-                          display:
-                            "flex",
+                        const itemKey =
+                          `${group.key}-${itemName}`;
 
-                          alignItems:
-                            "center",
+                        const isSaving =
+                          savingItem ===
+                          itemKey;
 
-                          justifyContent:
-                            "space-between",
+                        return (
+                          <div
+                            key={itemName}
+                            style={{
+                              display:
+                                "flex",
 
-                          gap: "10px",
+                              alignItems:
+                                "center",
 
-                          padding:
-                            "10px",
+                              justifyContent:
+                                "space-between",
 
-                          border:
-                            "1px solid #e5e7eb",
+                              gap: "10px",
 
-                          borderRadius:
-                            "7px",
+                              padding:
+                                "10px",
 
-                          backgroundColor:
-                            getStatusBackground(
-                              currentStatus
-                            ),
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontWeight:
-                              "bold",
+                              border:
+                                "1px solid #e5e7eb",
 
-                            fontSize:
-                              "13px",
+                              borderRadius:
+                                "7px",
 
-                            whiteSpace:
-                              "nowrap",
-                          }}
-                        >
-                          {itemName}
-                        </span>
+                              backgroundColor:
+                                getStatusBackground(
+                                  currentStatus
+                                ),
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontWeight:
+                                  "bold",
 
-                        <select
-                          value={
-                            currentStatus
-                          }
-                          disabled={
-                            !isAdmin ||
-                            isSaving
-                          }
-                          onChange={(
-                            event
-                          ) =>
-                            changeStatus(
-                              group.key,
-                              itemName,
-                              event.target
-                                .value
-                            )
-                          }
-                          style={{
-                            padding:
-                              "6px",
+                                fontSize:
+                                  "13px",
 
-                            border:
-                              "1px solid #cbd5e1",
+                                whiteSpace:
+                                  "nowrap",
+                              }}
+                            >
+                              {itemName}
+                            </span>
 
-                            borderRadius:
-                              "5px",
+                            <select
+                              value={
+                                currentStatus
+                              }
+                              disabled={
+                                !isAdmin ||
+                                isSaving
+                              }
+                              onChange={(
+                                event
+                              ) =>
+                                changeStatus(
+                                  group.key,
+                                  itemName,
+                                  event.target
+                                    .value
+                                )
+                              }
+                              style={{
+                                padding:
+                                  "6px",
 
-                            backgroundColor:
-                              isAdmin
-                                ? "white"
-                                : "#f3f4f6",
+                                border:
+                                  "1px solid #cbd5e1",
 
-                            cursor:
-                              isAdmin
-                                ? "pointer"
-                                : "not-allowed",
-                          }}
-                        >
-                          {SPREAD_STATUS_OPTIONS.map(
-                            (
-                              statusName
-                            ) => (
-                              <option
-                                key={
+                                borderRadius:
+                                  "5px",
+
+                                backgroundColor:
+                                  isAdmin
+                                    ? "white"
+                                    : "#f3f4f6",
+
+                                cursor:
+                                  isAdmin
+                                    ? "pointer"
+                                    : "not-allowed",
+                              }}
+                            >
+                              {SPREAD_STATUS_OPTIONS.map(
+                                (
                                   statusName
-                                }
-                                value={
-                                  statusName
-                                }
-                              >
-                                {
-                                  statusName
-                                }
-                              </option>
-                            )
-                          )}
-                        </select>
-                      </div>
-                    );
-                  }
-                )}
-              </div>
-            </section>
-          )
-        )}
+                                ) => (
+                                  <option
+                                    key={
+                                      statusName
+                                    }
+                                    value={
+                                      statusName
+                                    }
+                                  >
+                                    {
+                                      statusName
+                                    }
+                                  </option>
+                                )
+                              )}
+                            </select>
+                          </div>
+                        );
+                      }
+                    )}
+                  </div>
+                </section>
+              )
+            )}
+
+          </>)}
+
       </div>
     </div>
   );
