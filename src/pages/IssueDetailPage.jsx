@@ -9,8 +9,6 @@ import {
 import { styles } from "../styles";
 import SpreadDeploymentPanel from "../components/SpreadDeploymentPanel";
 
-import SperadDeploymentPanel from "../components/SpreadDeploymentPanel";
-
 function convertFileToPhoto(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -391,6 +389,35 @@ export default function IssueDetailPage({
     }
   };
 
+  const deleteComment = async (
+  commentId
+) => {
+  if (
+    !window.confirm(
+      "댓글을 삭제하시겠습니까?"
+    )
+  ) {
+    return;
+  }
+
+  try {
+    await onUpdate({
+      comments: (
+        issue.comments || []
+      ).filter(
+        (comment) =>
+          comment.id !== commentId
+      ),
+    });
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "댓글 삭제에 실패했습니다."
+    );
+  }
+};
+
   return (
     <div
       style={{
@@ -556,32 +583,65 @@ export default function IssueDetailPage({
               }}
             >
               <div
-                style={{
-                  display: "flex",
-                  justifyContent:
-                    "space-between",
-                  gap: "15px",
-                }}
-              >
-                <b>
-                  {savedComment.writerName}
-                  {" / "}
-                  {savedComment.writerEmail}
-                </b>
+  style={{
+    display: "flex",
+    justifyContent:
+      "space-between",
+    alignItems: "center",
+    gap: "15px",
+  }}
+>
+  <b>
+    {savedComment.writerName}
+    {" / "}
+    {savedComment.writerEmail}
+  </b>
 
-                {savedComment.createdAt && (
-                  <span
-                    style={{
-                      color: "#888",
-                      fontSize: "12px",
-                    }}
-                  >
-                    {
-                      savedComment.createdAt
-                    }
-                  </span>
-                )}
-              </div>
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: "10px",
+    }}
+  >
+    {savedComment.createdAt && (
+      <span
+        style={{
+          color: "#888",
+          fontSize: "12px",
+        }}
+      >
+        {
+          savedComment.createdAt
+        }
+      </span>
+    )}
+
+    {currentProfile?.role ===
+      "admin" && (
+      <button
+        onClick={() =>
+          deleteComment(
+            savedComment.id
+          )
+        }
+        style={{
+          border: "none",
+          background:
+            "#ff4d4f",
+          color: "white",
+          borderRadius: "4px",
+          padding:
+            "4px 8px",
+          cursor: "pointer",
+          fontSize: "12px",
+        }}
+      >
+        삭제
+      </button>
+    )}
+  </div>
+</div>
 
               {savedComment.content && (
                 <p
