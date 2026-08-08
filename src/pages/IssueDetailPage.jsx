@@ -565,6 +565,7 @@ export default function IssueDetailPage({
               >
                 <b>
                   {savedComment.writerName}
+                  {" / "}
                   {savedComment.writerEmail}
                 </b>
 

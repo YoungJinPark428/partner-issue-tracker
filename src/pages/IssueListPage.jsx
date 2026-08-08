@@ -183,8 +183,11 @@ export default function IssueListPage({
           </h1>
 
           <p>
-            이슈 등록 및 협력사 PM 진행
-            현황 관리
+            💡문의사항 및 기능개선 접수
+          <br/>
+            🤓박영진 책임연구원 (PRI조립/접합기술Task)
+          <br/>
+            ✉️youngjin428.park@lge.com / 📲010-9660-8024
           </p>
 
 
