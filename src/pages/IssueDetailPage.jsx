@@ -357,10 +357,10 @@ export default function IssueDetailPage({
 
     const nextComment = {
       id: `${Date.now()}-${Math.random()}`,
-      writer: 
-        `${currentProfile?.name || "사용자"} / ${
-        currentProfile?.email || ""
-        }`,
+      writerName: 
+        currentProfile?.name,
+      writerEmail:
+        currentProfile?.email,
       content: comment.trim(),
       photos: commentPhotos,
       createdAt:
@@ -564,7 +564,8 @@ export default function IssueDetailPage({
                 }}
               >
                 <b>
-                  {savedComment.writer}
+                  {savedComment.writerName}
+                  {savedComment.writerEmail}
                 </b>
 
                 {savedComment.createdAt && (
